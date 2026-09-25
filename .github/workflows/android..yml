@@ -10,15 +10,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Unzip project files
+      - name: Find and Unzip Project Archive
         run: |
-          unzip -o AICalendar.zip
-          if [ -d "AICalendar" ]; then
-            cp -r AICalendar/* .
+          # Ищем любой .zip файл в корне репозитория
+          ZIP_FILE=$(find . -maxdepth 1 -name "*.zip" | head -n 1)
+          if [ -n "$ZIP_FILE" ]; then
+            echo "Распаковываем архив: $ZIP_FILE"
+            unzip -o "$ZIP_FILE"
+            # Если внутри архива оказалась одноименная папка, переносим содержимое в корень
+            DIR_NAME=$(basename "$ZIP_FILE" .zip)
+            if [ -d "$DIR_NAME" ]; then
+              cp -r "$DIR_NAME"/* .
+            fi
+          else
+            echo "ZIP-архив не найден, собираем из исходников в репозитории"
           fi
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
@@ -29,7 +38,9 @@ jobs:
           echo "android.enableJetifier=true" >> gradle.properties
 
       - name: Setup Gradle Wrapper
-        run: gradle wrapper
+        run: |
+          gradle wrapper
+          chmod +x gradlew
 
       - name: Setup Gradle Action
         uses: gradle/actions/setup-gradle@v3
@@ -42,3 +53,4 @@ jobs:
         with:
           name: app-debug
           path: "**/build/outputs/apk/debug/*.apk"
+
