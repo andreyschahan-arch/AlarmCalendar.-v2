@@ -37,12 +37,10 @@ jobs:
           echo "android.useAndroidX=true" >> gradle.properties
           echo "android.enableJetifier=true" >> gradle.properties
 
-           - name: Setup Gradle Wrapper
-            run: |
-            gradle wrapper --gradle-version 8.9
-            chmod +x gradlew
-
-
+      - name: Setup Gradle Wrapper
+        run: |
+          gradle wrapper --gradle-version 8.9
+          chmod +x gradlew
 
       - name: Setup Gradle Action
         uses: gradle/actions/setup-gradle@v3
