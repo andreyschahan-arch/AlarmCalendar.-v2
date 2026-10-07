@@ -39,8 +39,9 @@ jobs:
 
       - name: Setup Gradle Wrapper
         run: |
-          gradle wrapper
+          gradle wrapper --gradle-version 8.7
           chmod +x gradlew
+
 
       - name: Setup Gradle Action
         uses: gradle/actions/setup-gradle@v3
